@@ -1,5 +1,5 @@
-# Reinforcement Fine Tuning for Diagnosis [RFTD^*]
-Pronounced rafted as in - bring or fasten together (a number of boats or other objects) side by side.
+# AI Diagnosis Training [AIDiT^*]
+Pronounced Aid-it. Helping LLMs to be better at arriving at diagnosis.
 
 Training open source models to generate better clinical diagnoses.
 [Coming Soon]
