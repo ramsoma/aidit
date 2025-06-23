@@ -2,7 +2,18 @@
 
 *Pronounced "Aid-it"*
 
-Training open source models to generate better clinical diagnoses.
+Training open source models to generate better clinical diagnoses. 
+
+## Problem
+Currently LLMS treat health related queries as a question - answer type situation. This leads to a scenario where the LLM provides a bunch of information to the user but not a clear diagnosis or next steps to follow. Prior research has showed that this leads to suboptimal outcomes in both a) improper diagnosis since the member might not formulate the question with enough information initially b) being less actionable or more confusing to the user ([study][https://arxiv.org/pdf/2504.18919]). 
+
+This repo asks the the question - can we post-train LLMs to respond like a doctor would ? Not jump to an answer straight away but collect all information and make a diagnosis only when enough information is collected? 
+
+## Approach 
+
+We start with the base Qwen3 model and post-train it with SFT and DPO to create a LLM that behave much more like a diagnostician. At each step, the thinking tokens maintain the differential diagnosis based on all the available information. Based on this, the LLM picks the next most important question to ask the member. Finally, we teach the LLM some good manners to ask the member if they are ok to continue answering more questions so that this does not feel like a bottomless pit of questions.
+
+We start with some realistic conversation data between a doctor and a patient from this [paper](https://www.nature.com/articles/s41597-022-01423-1). We create a training set by using a teacher model to create the thought streams. Finally we use SFT to train the model. Further we use DPO to better align the model to periodically ask the member for permission to continue asking them questions (bedside manners?).
 
 ---
 
@@ -11,7 +22,7 @@ Training open source models to generate better clinical diagnoses.
 AIDiT is a toolkit for preparing, training, and evaluating large language models (LLMs) for clinical diagnosis tasks. It provides:
 
 - **Data preparation**: Scripts and notebooks to process raw doctor-patient conversations and generate datasets for supervised fine-tuning (SFT).
-- **Model fine-tuning**: Notebooks and scripts for SFT, reward modeling, and DPO (Direct Preference Optimization) on clinical dialogue data.
+- **Model fine-tuning**: Notebooks and scripts for SFT, reward modeling, and DPO (Direct Preference Optimization) on clinical dialogue data. Our code is adapted (copied) from the Unsloth training code. We have currently fine tuned and DPOed the Qwen 3 model.
 - **Evaluation**: Simulation and evaluation tools to benchmark model performance in doctor-patient scenarios.
 
 ---
