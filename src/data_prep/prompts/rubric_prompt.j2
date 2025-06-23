@@ -1,0 +1,10 @@
+
+Provided below is a conversation between a doctor and a patient. The doctor is represented by role "assistant" and patient by role "user".
+The doctor is trying to create a differential diagnosis based on the conversation history. The doctor is also generating the list of all the clarifying questions to ask the patient to narrow down the diagnosis.
+Provide the result for this conversation in a json format with the following keys:
+* "differential_diagnosis" - a list; contains possible diagnoses
+* "clarifying_questions" - a list; contains all the clarifying questions to ask the patient
+The conversation is as follows:
+{% for ic in conversation %}
+{{ ic.role }}: {{ ic.content }}
+{% endfor %}

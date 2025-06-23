@@ -1,0 +1,10 @@
+openai
+transformers
+torch
+datasets
+tqdm
+pandas
+numpy
+jinja2
+# Optional (for reward modeling, semantic similarity):
+# sentence-transformers 

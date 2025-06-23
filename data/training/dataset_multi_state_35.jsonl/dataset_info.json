@@ -1,0 +1,30 @@
+{
+  "citation": "",
+  "description": "",
+  "features": {
+    "conversation_id": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "conversation": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "rubric": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "metadata": {
+      "conversation_id": {
+        "dtype": "string",
+        "_type": "Value"
+      },
+      "type": {
+        "dtype": "string",
+        "_type": "Value"
+      }
+    }
+  },
+  "homepage": "",
+  "license": ""
+}
