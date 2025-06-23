@@ -59,14 +59,14 @@ class SimulationDriver:
             # Judge evaluates (if provided)
             evaluation: Dict[str, Any] | None = None
             if self.judge is not None:
-                try:
-                    evaluation = self.judge.evaluate_response(
-                        conversation_history=self.patient.history,  # so far
-                        doctor_response=doctor_reply,
-                    )
-                except NotImplementedError:
-                    if turn_idx == 0:  # warn once
-                        print("[WARN] Judge.evaluate_response not implemented – skipping scoring.")
+                evaluation = self.judge.evaluate_response(
+                    conversation_history=self.patient.history,  # so far
+                    doctor_response=doctor_reply,
+                )
+                if evaluation is None or evaluation.get("score") is None:
+                    print(f"[WARN] Judge returned no score at turn {turn_idx}.")
+                else:
+                    print(f"[EVAL] Turn {turn_idx}: Score={evaluation['score']} Feedback={evaluation['feedback'][:80]}...")
 
             # Patient replies
             patient_reply = self.patient.generate_patient_response(doctor_reply)
@@ -137,15 +137,37 @@ def main() -> None:
     # ---------------------------------------------------------------------
     print(f"Running simulation on {len(ds)} entries…")
 
+    all_scores = []
+    total_turns = 0
     with args.output.open("w", encoding="utf-8") as f:
         for idx, example in enumerate(ds):
             initial_patient_prompt: str = example[text_col]
             log = driver.run_dialogue(initial_patient_prompt)
             f.write(json.dumps(log, ensure_ascii=False) + "\n")
+            # Collect scores for metrics
+            for turn in log["turns"]:
+                eval_score = turn.get("evaluation", {}).get("score")
+                if isinstance(eval_score, (int, float)):
+                    all_scores.append(eval_score)
+                total_turns += 1
             if (idx + 1) % 10 == 0:
                 print(f"…completed {idx + 1}/{len(ds)} dialogues")
 
-    print(f"Done. Logs saved to {args.output}")
+    # Compute and print average score
+    avg_score = sum(all_scores) / len(all_scores) if all_scores else 0.0
+    print(f"\nAverage evaluation score across all turns: {avg_score:.2f}")
+
+    # Save metrics to a separate file
+    metrics = {
+        "average_score": avg_score,
+        "total_dialogues": len(ds),
+        "total_turns": total_turns,
+        "scored_turns": len(all_scores),
+    }
+    metrics_path = args.output.with_name(args.output.stem + "_metrics.json")
+    with metrics_path.open("w", encoding="utf-8") as mf:
+        json.dump(metrics, mf, indent=2)
+    print(f"Metrics saved to {metrics_path}")
 
 
 if __name__ == "__main__":
